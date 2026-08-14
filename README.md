@@ -3,253 +3,148 @@
 ![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)
 ![Platform](https://img.shields.io/badge/Platform-Linux-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![DE](https://img.shields.io/badge/Desktop-GNOME%20%7C%20KDE%20%7C%20Sway%20%7C%20i3-purple.svg)
+![OpenDeck](https://img.shields.io/badge/StreamDeck-OpenAction%20Compatible-brightgreen.svg)
 
-**OpenCenter** is a high-performance, lightweight, modern Linux control center for **Elgato Key Lights**, **Key Light Air**, **Key Light Mini**, and **Light Strips**. 
-
-Built from the ground up in **Rust** as a modern replacement for unmaintained Linux utilities, OpenCenter provides a native **eframe/egui GUI**, a **DBus System Tray Applet**, **mDNS Zeroconf Auto-Discovery**, **Custom Presets**, **Smooth Transitions**, and a full-featured **CLI Engine**.
+**OpenCenter** is a fast, lightweight Linux control center for **Elgato Key Lights**, **Key Light Air**, **Key Light Mini**, and **Light Strips**. Written in Rust, it provides a native GUI, system tray applet, CLI, mDNS auto-discovery, custom presets, smooth fading, and an OpenAction/OpenDeck plugin.
 
 ---
 
-## 📸 Overview & Features
+## ✨ Features
 
-- 🔍 **Dual Discovery Engine**: Auto-scans local networks for `_elg._tcp.local` via mDNS with an ultra-fast local subnet fallback scan. Manual IP entry support for multi-VLAN or isolated subnets.
-- 🖥️ **Desktop GUI Window**: Dark-mode native interface with real-time connection status indicators, individual and master sliders for Brightness (0–100%) and Kelvin Temperature (2900K–7000K).
-- 📌 **System Tray Applet**: Native `StatusNotifierItem` DBus applet for seamless top-bar tray integration on GNOME, KDE Plasma, Sway, Wayland, and X11.
-- ⚡ **CLI Automation Engine**: Command-line tool designed for scripting, Stream Deck macro keys, and desktop global keyboard shortcuts.
-- 🎨 **Scene & Preset Manager**: Includes single-click presets (*Focus 5000K*, *Studio Call 4500K*, *Warm Reading 3000K*, *Night Shift 2700K*, *All Off*) with custom preset creation.
-- 🌊 **Smooth Fade Engine**: Gradually interpolates brightness and temperature over configurable millisecond intervals to avoid sudden lighting jumps on camera.
-- ⚙️ **Zero-Config Autostart**: Built-in `systemd --user` service script for zero-overhead background operation.
+- 🔍 **mDNS Auto-Discovery**: Automatically discovers lights on the local network (`_elg._tcp.local`) with manual IP fallback.
+- 🖥️ **Desktop GUI & Tray**: Dark-mode GUI (`eframe`) and DBus system tray applet (`ksni`) with live status and master sliders.
+- ⚡ **CLI Automation**: Fast command-line interface for scripts, hotkeys, and macro pads.
+- 🎮 **OpenDeck Plugin**: Native OpenAction integration for Stream Deck hardware buttons and dials.
+- 🎨 **Presets & Smooth Fading**: One-click scenes (*Focus*, *Studio Call*, *Warm Reading*, *Night Shift*) with configurable fade transitions.
 
 ---
 
-## 📱 Supported Devices
+## 📦 Workspace Structure
 
-- **Elgato Key Light**
-- **Elgato Key Light Air**
-- **Elgato Key Light Mini**
-- **Elgato Key Light MK.2**
-- **Elgato Light Strip / Light Strip Pro**
+| Crate | Description |
+| :--- | :--- |
+| **[`opencenter-core`](crates/opencenter-core)** | Shared library: Elgato REST client, mDNS discovery, models, and atomic config persistence. |
+| **[`opencenter`](crates/opencenter-app)** | Main desktop binary: GUI window, system tray applet, and CLI parser. |
+| **[`opencenter-opendeck`](crates/opencenter-opendeck)** | OpenAction plugin binary for OpenDeck and Stream Deck controllers. |
 
 ---
 
-## 🛠️ Prerequisites & Build Dependencies
+## 🛠️ Prerequisites
 
-Ensure the following development packages are installed on your Linux system:
+Install system dependencies for your Linux distribution:
 
-#### Ubuntu / Debian / Pop!_OS
 ```bash
-sudo apt update
+# Ubuntu / Debian / Pop!_OS
 sudo apt install build-essential pkg-config libdbus-1-dev libx11-dev libxkbcommon-dev
-```
 
-#### Fedora / RHEL
-```bash
+# Fedora / RHEL
 sudo dnf install dbus-devel libX11-devel libxkbcommon-devel
-```
 
-#### Arch Linux / Manjaro
-```bash
+# Arch Linux / Manjaro
 sudo pacman -S base-devel dbus libx11 libxkbcommon
 ```
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation & Setup
 
-Build and install `opencenter` to `~/.local/bin/` and generate the `systemd` user service:
-
+### 1. Desktop App & Background Service
 ```bash
-chmod +x install.sh
 ./install.sh
-```
 
-### Enable Background Daemon & Tray Applet on Startup
-
-```bash
+# Enable autostart on desktop login
 systemctl --user enable --now opencenter
 ```
 
+### 2. OpenDeck / Stream Deck Plugin
+```bash
+./package-opendeck.sh
+cp -r com.akitafuki.opencenter.sdPlugin ~/.local/share/OpenDeck/plugins/
+```
+
+**Plugin Actions:**
+- `Toggle Lights`: Power toggle with real-time button state.
+- `Apply Preset`: Triggers saved lighting scenes.
+- `Adjust Brightness`: Step (+/- 10%) or set fixed brightness.
+- `Adjust Temperature`: Step (+/- 500K) or set fixed Kelvin temperature.
+
 ---
 
-## 🚀 Usage Guide
+## 🚀 Usage
 
-### 1. Graphical User Interface (GUI) & System Tray
-Launch the GUI window and system tray applet:
+### Desktop GUI & Tray
 ```bash
 opencenter gui
 ```
 
----
+### CLI Quick Reference
 
-### 2. Command Line Interface (CLI)
-
-#### 🔍 Auto-Discover Devices
-```bash
-# Scan local network and automatically save discovered devices to config
-opencenter discover --save
-```
-
-#### 💡 Check Real-Time Device Status
-```bash
-opencenter status
-```
-
-Output example:
-```text
-💡 Elgato Device Statuses:
-  • Key Light Left       | IP: 192.168.1.50    | 🟢 ON  | Brightness:  80% | Temp: 4500K
-  • Key Light Right      | IP: 192.168.1.51    | 🟢 ON  | Brightness:  80% | Temp: 4500K
-```
-
-#### ⚡ Power Control
-```bash
-# Toggle power on all lights
-opencenter toggle
-
-# Toggle power on a specific light by IP or Name
-opencenter toggle 192.168.1.50
-
-# Turn ON or OFF explicitly
-opencenter on
-opencenter off
-```
-
-#### 🎛️ Adjust Brightness & Color Temperature
-```bash
-# Set brightness to 80% and color temp to 4500K for all lights
-opencenter set --brightness 80 --kelvin 4500
-
-# Target a specific device by IP or Name
-opencenter set --target 192.168.1.50 --brightness 100 --kelvin 5000
-```
-
-#### 🌊 Smooth Transition / Fade
-```bash
-# Fade to 100% brightness and 5000K over 2000 milliseconds (2 seconds)
-opencenter fade --brightness 100 --kelvin 5000 --duration-ms 2000
-```
-
-#### 📋 Preset Management
-```bash
-# List all saved presets
-opencenter preset list
-
-# Apply a preset by name
-opencenter preset apply "Studio Call"
-opencenter preset apply "Warm Reading"
-opencenter preset apply "Night Shift"
-opencenter preset apply "All Off"
-
-# Save current light state as a new custom preset
-opencenter preset save "Streaming Setup"
-```
-
-#### ⚡ Flash Light to Identify Location
-```bash
-opencenter identify 192.168.1.50
-```
-
-#### ➕ Manual Device IP Management
-```bash
-# Add a device manually by IP
-opencenter add-ip 192.168.1.55 --name "Desk Key Light"
-
-# Remove a device by IP
-opencenter remove-ip 192.168.1.55
-```
+| Action | Command |
+| :--- | :--- |
+| **Auto-Discover** | `opencenter discover --save` |
+| **Check Status** | `opencenter status` |
+| **Toggle Power** | `opencenter toggle [IP / Group / all]` |
+| **Set Power** | `opencenter on` / `opencenter off` |
+| **Adjust Settings** | `opencenter set --brightness 80 --kelvin 4500` |
+| **Smooth Fade** | `opencenter fade --brightness 100 --kelvin 5000 --duration-ms 2000` |
+| **Apply Preset** | `opencenter preset apply "Studio Call"` |
+| **Save Preset** | `opencenter preset save "Custom Scene"` |
+| **Identify Light** | `opencenter identify <IP>` |
+| **Add / Remove IP** | `opencenter add-ip <IP> --name "Desk"` / `opencenter remove-ip <IP>` |
 
 ---
 
-## ⌨️ Desktop Global Hotkey Integration
+## ⌨️ Global Hotkeys
 
-Bind shell commands directly to keyboard shortcuts in your desktop environment:
+Bind commands in **GNOME/KDE Settings $\rightarrow$ Keyboard Shortcuts**, or window manager configs:
 
-### GNOME / KDE / XFCE
-Go to **Settings** $\rightarrow$ **Keyboard** $\rightarrow$ **Custom Shortcuts**:
-
-| Action | Command | Recommended Hotkey |
-| :--- | :--- | :--- |
-| **Toggle Lights Power** | `opencenter toggle` | `Super + Alt + L` |
-| **Studio Meeting Preset** | `opencenter preset apply "Studio Call"` | `Super + Alt + S` |
-| **Night Shift Mode** | `opencenter preset apply "Night Shift"` | `Super + Alt + N` |
-| **Max Brightness** | `opencenter set --brightness 100` | `Super + Alt + Up` |
-| **Turn All Off** | `opencenter off` | `Super + Alt + Down` |
-
-### Hyprland (`~/.config/hypr/hyprland.conf`)
 ```ini
+# Hyprland (~/.config/hypr/hyprland.conf)
 bind = SUPER ALT, L, exec, opencenter toggle
 bind = SUPER ALT, S, exec, opencenter preset apply "Studio Call"
 bind = SUPER ALT, N, exec, opencenter preset apply "Night Shift"
-```
 
-### Sway / i3 (`~/.config/sway/config`)
-```ini
+# Sway / i3 (~/.config/sway/config)
 bindsym $mod+Mod1+l exec opencenter toggle
 bindsym $mod+Mod1+s exec opencenter preset apply "Studio Call"
 ```
 
 ---
 
-## 💾 Configuration Schema
+## 💾 Configuration
 
-Configuration is automatically stored in `~/.config/opencenter/config.json`:
+Settings are stored in `~/.config/opencenter/config.json`:
 
 ```json
 {
   "devices": [
-    {
-      "ip": "192.168.1.50",
-      "name": "Key Light Left",
-      "serial": "AZ123456789",
-      "model": "Elgato Key Light Air",
-      "enabled": true
-    }
-  ],
-  "groups": [
-    {
-      "name": "Desk Lights",
-      "device_ips": ["192.168.1.50"]
-    }
+    { "ip": "192.168.1.50", "name": "Key Light Left", "enabled": true }
   ],
   "presets": [
-    {
-      "name": "Focus",
-      "on": true,
-      "brightness": 80,
-      "kelvin": 5000
-    },
-    {
-      "name": "Studio Call",
-      "on": true,
-      "brightness": 100,
-      "kelvin": 4500
-    }
+    { "name": "Focus", "on": true, "brightness": 80, "kelvin": 5000 },
+    { "name": "Studio Call", "on": true, "brightness": 100, "kelvin": 4500 }
   ]
 }
 ```
 
 ---
 
-## 📐 Technical Architecture & API Details
+## 📐 Technical API
 
-Elgato Key Lights communicate locally on **Port 9123** via unauthenticated HTTP JSON:
+Elgato lights communicate locally over plain HTTP JSON (**Port 9123**):
+- `GET /elgato/accessory-info` – Metadata and serial numbers.
+- `GET /elgato/lights` & `PUT /elgato/lights` – Power, brightness (0–100%), and color temperature in mireds ($M = \lfloor 1,000,000 / K \rfloor$, range: $2900\text{K} \leftrightarrow 344$, $7000\text{K} \leftrightarrow 143$).
 
-- **Metadata Endpoint**: `GET http://<ip>:9123/elgato/accessory-info`
-- **Status Endpoint**: `GET http://<ip>:9123/elgato/lights`
-- **Update Endpoint**: `PUT http://<ip>:9123/elgato/lights`
+---
 
-### Color Temperature Conversion
-Elgato devices specify color temperature in **mireds** ($M$):
-$$M = \left\lfloor \frac{1,000,000}{\text{Kelvin}} \right\rfloor$$
+## 🧪 Testing
 
-- **$2900\text{K (Warm Yellow)}$** $\rightarrow 344\text{ mireds}$
-- **$7000\text{K (Cool Blue)}$** $\rightarrow 143\text{ mireds}$
-
-OpenCenter handles all mired/kelvin conversions automatically.
+```bash
+cargo test --workspace
+```
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE). Inspired by [`monadplus/elgato-keylight`](https://github.com/monadplus/elgato-keylight).
+[MIT License](LICENSE). Inspired by [`monadplus/elgato-keylight`](https://github.com/monadplus/elgato-keylight).

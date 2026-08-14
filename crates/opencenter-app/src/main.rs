@@ -1,9 +1,5 @@
-mod api;
 mod cli;
-mod config;
-mod discovery;
 mod gui;
-mod models;
 mod tray;
 
 use clap::Parser;

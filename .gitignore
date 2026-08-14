@@ -2,6 +2,7 @@
 # Compiled files and executables
 /target/
 debug/
+*.sdPlugin/
 
 # Rust backup and debug files
 **/*.rs.bk
