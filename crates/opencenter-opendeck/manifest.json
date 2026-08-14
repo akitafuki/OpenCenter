@@ -1,0 +1,91 @@
+{
+  "Author": "Jimmie Maggard Jr",
+  "Description": "Control Elgato Key Lights locally on Linux with OpenCenter",
+  "Name": "OpenCenter",
+  "Icon": "assets/icon",
+  "URL": "https://github.com/akitafuki/OpenCenter",
+  "Version": "1.0.0",
+  "OS": [
+    {
+      "Platform": "linux",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "1.0"
+  },
+  "CodePath": "bin/opencenter-opendeck",
+  "CodePathMac": "bin/opencenter-opendeck",
+  "CodePathWin": "bin/opencenter-opendeck.exe",
+  "Category": "OpenCenter",
+  "CategoryIcon": "assets/category",
+  "Actions": [
+    {
+      "Name": "Toggle Lights",
+      "UUID": "com.akitafuki.opencenter.toggle",
+      "Icon": "assets/toggle",
+      "Tooltip": "Toggle Power for Elgato Key Lights",
+      "States": [
+        {
+          "Image": "assets/toggle_off",
+          "Title": "Off",
+          "TitleAlignment": "middle",
+          "FontSize": 12,
+          "FontColor": "#ffffff"
+        },
+        {
+          "Image": "assets/toggle_on",
+          "Title": "On",
+          "TitleAlignment": "middle",
+          "FontSize": 12,
+          "FontColor": "#ffffff"
+        }
+      ]
+    },
+    {
+      "Name": "Apply Preset",
+      "UUID": "com.akitafuki.opencenter.preset",
+      "Icon": "assets/preset",
+      "Tooltip": "Apply a saved OpenCenter lighting preset",
+      "States": [
+        {
+          "Image": "assets/preset",
+          "Title": "Preset",
+          "TitleAlignment": "middle",
+          "FontSize": 12,
+          "FontColor": "#ffffff"
+        }
+      ]
+    },
+    {
+      "Name": "Adjust Brightness",
+      "UUID": "com.akitafuki.opencenter.brightness",
+      "Icon": "assets/brightness",
+      "Tooltip": "Set or step brightness level",
+      "States": [
+        {
+          "Image": "assets/brightness",
+          "Title": "Brightness",
+          "TitleAlignment": "middle",
+          "FontSize": 12,
+          "FontColor": "#ffffff"
+        }
+      ]
+    },
+    {
+      "Name": "Adjust Temperature",
+      "UUID": "com.akitafuki.opencenter.temperature",
+      "Icon": "assets/temperature",
+      "Tooltip": "Set or step color temperature in Kelvin",
+      "States": [
+        {
+          "Image": "assets/temperature",
+          "Title": "Temp",
+          "TitleAlignment": "middle",
+          "FontSize": 12,
+          "FontColor": "#ffffff"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+[package]
+name = "opencenter-opendeck"
+version = "0.1.0"
+edition = "2021"
+description = "OpenAction / OpenDeck plugin for OpenCenter Elgato Key Light control"
+
+[dependencies]
+opencenter-core = { path = "../opencenter-core" }
+openaction = "2.6"
+async-trait = "0.1"
+tokio = { version = "1.38", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1.0"

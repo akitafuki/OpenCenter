@@ -1,25 +1,10 @@
-[package]
-name = "opencenter"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-tokio = { version = "1.38", features = ["full"] }
-reqwest = { version = "0.12", features = ["json"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-clap = { version = "4.5", features = ["derive"] }
-eframe = { version = "0.28", features = ["default"] }
-ksni = "0.2"
-dirs = "5.0"
-anyhow = "1.0"
-mdns-sd = "0.11"
-tracing = "0.1"
-tracing-subscriber = "0.3"
-image = "0.25"
-
-[dev-dependencies]
-tempfile = "3.10"
+[workspace]
+members = [
+    "crates/opencenter-core",
+    "crates/opencenter-app",
+    "crates/opencenter-opendeck",
+]
+resolver = "2"
 
 # Speed up development & CI builds by optimizing dependencies once and reducing debug symbol overhead
 [profile.dev]

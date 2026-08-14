@@ -1,11 +1,11 @@
-use crate::api::ElgatoClient;
-use crate::config::ConfigManager;
-use crate::discovery::DiscoveryManager;
-use crate::models::{
+use eframe::egui::{self, Color32, Layout, RichText, Slider, Vec2};
+use opencenter_core::api::ElgatoClient;
+use opencenter_core::config::ConfigManager;
+use opencenter_core::discovery::DiscoveryManager;
+use opencenter_core::models::{
     kelvin_to_mired, kelvin_to_rgb, mired_to_kelvin, AppConfig, DeviceConfig, LightState,
     KELVIN_MAX, KELVIN_MIN,
 };
-use eframe::egui::{self, Color32, Layout, RichText, Slider, Vec2};
 use std::collections::HashMap;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::time::{Duration, Instant};
