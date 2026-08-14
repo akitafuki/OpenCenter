@@ -1,5 +1,5 @@
 use ksni::menu::{MenuItem, StandardItem};
-use ksni::{Handle, ToolTip, Tray, TrayService};
+use ksni::{Handle, ToolTip, Tray, TrayMethods};
 use opencenter_core::api::ElgatoClient;
 use opencenter_core::config::ConfigManager;
 use std::sync::Arc;
@@ -114,10 +114,7 @@ impl Tray for ElgatoTray {
     }
 }
 
-pub fn spawn_tray(rt: Arc<Runtime>) -> Handle<ElgatoTray> {
-    let tray = ElgatoTray::new(rt);
-    let service = TrayService::new(tray);
-    let handle = service.handle();
-    service.spawn();
-    handle
+pub fn spawn_tray(rt: Arc<Runtime>) -> Option<Handle<ElgatoTray>> {
+    let tray = ElgatoTray::new(rt.clone());
+    rt.block_on(async move { tray.spawn().await.ok() })
 }
