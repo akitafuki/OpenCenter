@@ -133,7 +133,9 @@ impl ElgatoGuiApp {
 }
 
 impl eframe::App for ElgatoGuiApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx().clone();
+
         // Drain pending async messages
         while let Ok(msg) = self.rx.try_recv() {
             match msg {
@@ -165,7 +167,7 @@ impl eframe::App for ElgatoGuiApp {
 
         ctx.set_visuals(egui::Visuals::dark());
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             ui.horizontal(|ui| {
                 ui.heading(RichText::new("💡 OpenCenter").strong().size(22.0));
                 ui.label(
