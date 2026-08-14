@@ -116,7 +116,5 @@ impl Tray for ElgatoTray {
 
 pub fn spawn_tray(rt: Arc<Runtime>) -> Option<Handle<ElgatoTray>> {
     let tray = ElgatoTray::new(rt.clone());
-    rt.block_on(async move {
-        tray.spawn().await.ok()
-    })
+    rt.block_on(async move { tray.spawn().await.ok() })
 }
