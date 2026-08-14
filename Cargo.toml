@@ -20,3 +20,15 @@ image = "0.25"
 
 [dev-dependencies]
 tempfile = "3.10"
+
+# Speed up development & CI builds by optimizing dependencies once and reducing debug symbol overhead
+[profile.dev]
+opt-level = 0
+debug = 1
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+opt-level = 3
+codegen-units = 16
