@@ -9,6 +9,12 @@ pub struct ConfigManager {
     pub path: PathBuf,
 }
 
+impl Default for ConfigManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ConfigManager {
     pub fn new() -> Self {
         let mut path = config_dir().unwrap_or_else(|| PathBuf::from("~/.config"));

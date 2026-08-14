@@ -11,6 +11,12 @@ pub struct ElgatoClient {
     http: Client,
 }
 
+impl Default for ElgatoClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ElgatoClient {
     pub fn new() -> Self {
         let http = Client::builder()

@@ -1,9 +1,11 @@
-use crate::api::ElgatoClient;
-use crate::config::ConfigManager;
-use crate::discovery::DiscoveryManager;
-use crate::models::{mired_to_kelvin, DeviceConfig, KELVIN_MAX, KELVIN_MIN};
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use opencenter_core::api::ElgatoClient;
+use opencenter_core::config::ConfigManager;
+use opencenter_core::discovery::DiscoveryManager;
+use opencenter_core::models::{
+    mired_to_kelvin, DeviceConfig, PresetConfig, KELVIN_MAX, KELVIN_MIN,
+};
 
 #[derive(Parser)]
 #[command(name = "opencenter")]
@@ -270,7 +272,7 @@ pub async fn handle_cli(cli: Cli) -> Result<()> {
                     if let Ok(state) = client.get_lights(&first_dev.ip).await {
                         if let Some(light) = state.lights.first() {
                             let k = light.temperature.map(mired_to_kelvin).unwrap_or(4000);
-                            let new_preset = crate::models::PresetConfig {
+                            let new_preset = PresetConfig {
                                 name: name.clone(),
                                 on: light.on == 1,
                                 brightness: light.brightness,

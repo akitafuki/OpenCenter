@@ -1,7 +1,7 @@
-use crate::api::ElgatoClient;
-use crate::config::ConfigManager;
 use ksni::menu::{MenuItem, StandardItem};
 use ksni::{Handle, ToolTip, Tray, TrayService};
+use opencenter_core::api::ElgatoClient;
+use opencenter_core::config::ConfigManager;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
 
