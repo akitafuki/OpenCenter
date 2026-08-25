@@ -206,9 +206,7 @@ impl Action for TemperatureAction {
             if let Ok(state) = client.get_lights(first_ip).await {
                 if let Some(light) = state.lights.first() {
                     let k = light.temperature.map(mired_to_kelvin).unwrap_or(4000);
-                    let _ = instance
-                        .set_title(Some(format!("{}K", k)), None)
-                        .await;
+                    let _ = instance.set_title(Some(format!("{}K", k)), None).await;
                 }
             }
         }
@@ -225,7 +223,8 @@ impl Action for TemperatureAction {
                 if let Some(light) = state.lights.first() {
                     let current_k = light.temperature.map(mired_to_kelvin).unwrap_or(4000) as i32;
                     let final_k = if let Some(delta) = settings.delta {
-                        (current_k + delta as i32).clamp(KELVIN_MIN as i32, KELVIN_MAX as i32) as u16
+                        (current_k + delta as i32).clamp(KELVIN_MIN as i32, KELVIN_MAX as i32)
+                            as u16
                     } else if let Some(val) = settings.set_value {
                         val.clamp(KELVIN_MIN, KELVIN_MAX)
                     } else {
