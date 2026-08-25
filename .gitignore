@@ -3,6 +3,8 @@
 /target/
 debug/
 *.sdPlugin/
+*.zip
+*.streamDeckPlugin
 
 # Rust backup and debug files
 **/*.rs.bk

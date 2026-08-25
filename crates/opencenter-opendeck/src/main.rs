@@ -124,28 +124,57 @@ impl Action for BrightnessAction {
     const UUID: ActionUuid = "com.akitafuki.opencenter.brightness";
     type Settings = BrightnessSettings;
 
+    async fn will_appear(
+        &self,
+        instance: &Instance,
+        settings: &Self::Settings,
+    ) -> OpenActionResult<()> {
+        let ips = resolve_target_ips(&settings.target);
+        if let Some(first_ip) = ips.first() {
+            let client = ElgatoClient::new();
+            if let Ok(state) = client.get_lights(first_ip).await {
+                if let Some(light) = state.lights.first() {
+                    let _ = instance
+                        .set_title(Some(format!("{}%", light.brightness)), None)
+                        .await;
+                }
+            }
+        }
+        Ok(())
+    }
+
     async fn key_up(&self, instance: &Instance, settings: &Self::Settings) -> OpenActionResult<()> {
         let ips = resolve_target_ips(&settings.target);
         let client = ElgatoClient::new();
+        let mut last_brightness = None;
 
         for ip in &ips {
             if let Ok(state) = client.get_lights(ip).await {
                 if let Some(light) = state.lights.first() {
-                    let mut b = light.brightness as i16;
-                    if let Some(delta) = settings.delta {
-                        b = (b + delta as i16).clamp(0, 100);
+                    let current_b = light.brightness as i16;
+                    let final_b = if let Some(delta) = settings.delta {
+                        (current_b + delta as i16).clamp(0, 100) as u8
                     } else if let Some(val) = settings.set_value {
-                        b = val as i16;
-                    }
-                    let final_b = b as u8;
+                        val.clamp(0, 100)
+                    } else {
+                        // Default step: +10%, wrap to 10% when exceeding 100%
+                        if current_b >= 100 {
+                            10
+                        } else {
+                            ((current_b + 10).min(100)) as u8
+                        }
+                    };
+
                     let _ = client
                         .set_settings(ip, Some(true), Some(final_b), None)
                         .await;
-                    let _ = instance
-                        .set_title(Some(format!("{}%", final_b)), None)
-                        .await;
+                    last_brightness = Some(final_b);
                 }
             }
+        }
+
+        if let Some(b) = last_brightness {
+            let _ = instance.set_title(Some(format!("{}%", b)), None).await;
         }
         Ok(())
     }
@@ -166,29 +195,60 @@ impl Action for TemperatureAction {
     const UUID: ActionUuid = "com.akitafuki.opencenter.temperature";
     type Settings = TemperatureSettings;
 
+    async fn will_appear(
+        &self,
+        instance: &Instance,
+        settings: &Self::Settings,
+    ) -> OpenActionResult<()> {
+        let ips = resolve_target_ips(&settings.target);
+        if let Some(first_ip) = ips.first() {
+            let client = ElgatoClient::new();
+            if let Ok(state) = client.get_lights(first_ip).await {
+                if let Some(light) = state.lights.first() {
+                    let k = light.temperature.map(mired_to_kelvin).unwrap_or(4000);
+                    let _ = instance
+                        .set_title(Some(format!("{}K", k)), None)
+                        .await;
+                }
+            }
+        }
+        Ok(())
+    }
+
     async fn key_up(&self, instance: &Instance, settings: &Self::Settings) -> OpenActionResult<()> {
         let ips = resolve_target_ips(&settings.target);
         let client = ElgatoClient::new();
+        let mut last_kelvin = None;
 
         for ip in &ips {
             if let Ok(state) = client.get_lights(ip).await {
                 if let Some(light) = state.lights.first() {
-                    let current_k = light.temperature.map(mired_to_kelvin).unwrap_or(4000);
-                    let mut k = current_k as i32;
-                    if let Some(delta) = settings.delta {
-                        k = (k + delta as i32).clamp(KELVIN_MIN as i32, KELVIN_MAX as i32);
+                    let current_k = light.temperature.map(mired_to_kelvin).unwrap_or(4000) as i32;
+                    let final_k = if let Some(delta) = settings.delta {
+                        (current_k + delta as i32).clamp(KELVIN_MIN as i32, KELVIN_MAX as i32) as u16
                     } else if let Some(val) = settings.set_value {
-                        k = val as i32;
-                    }
-                    let final_k = (k as u16).clamp(KELVIN_MIN, KELVIN_MAX);
+                        val.clamp(KELVIN_MIN, KELVIN_MAX)
+                    } else {
+                        // Default step: +500K, wrap to KELVIN_MIN when at or near KELVIN_MAX (>= 6950K)
+                        if current_k >= (KELVIN_MAX as i32 - 50) {
+                            KELVIN_MIN
+                        } else if current_k + 500 > KELVIN_MAX as i32 {
+                            KELVIN_MAX
+                        } else {
+                            (current_k + 500) as u16
+                        }
+                    };
+
                     let _ = client
                         .set_settings(ip, Some(true), None, Some(final_k))
                         .await;
-                    let _ = instance
-                        .set_title(Some(format!("{}K", final_k)), None)
-                        .await;
+                    last_kelvin = Some(final_k);
                 }
             }
+        }
+
+        if let Some(k) = last_kelvin {
+            let _ = instance.set_title(Some(format!("{}K", k)), None).await;
         }
         Ok(())
     }
