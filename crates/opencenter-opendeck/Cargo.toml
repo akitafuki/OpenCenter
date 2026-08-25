@@ -8,7 +8,7 @@ description = "OpenAction / OpenDeck plugin for OpenCenter Elgato Key Light cont
 opencenter-core = { path = "../opencenter-core" }
 openaction = "2.6"
 async-trait = "0.1"
-tokio = { version = "1.38", features = ["full"] }
+tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "time", "sync"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tracing = "0.1"
