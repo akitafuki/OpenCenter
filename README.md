@@ -59,8 +59,9 @@ systemctl --user enable --now opencenter
 ### 2. OpenDeck / Stream Deck Plugin
 ```bash
 ./package-opendeck.sh
-cp -r com.akitafuki.opencenter.sdPlugin ~/.local/share/OpenDeck/plugins/
 ```
+- **In OpenDeck UI:** Click **Install Plugin** $\rightarrow$ select `opencenter-opendeck.zip`.
+- **Manual install:** Copy `com.akitafuki.opencenter.sdPlugin` directly into `~/.local/share/OpenDeck/plugins/`.
 
 **Plugin Actions:**
 - `Toggle Lights`: Power toggle with real-time button state.

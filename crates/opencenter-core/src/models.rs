@@ -15,8 +15,14 @@ pub fn mired_to_kelvin(mired: u16) -> u16 {
     if mired == 0 {
         return 4000;
     }
+    if mired <= MIRED_MIN {
+        return KELVIN_MAX;
+    }
+    if mired >= MIRED_MAX {
+        return KELVIN_MIN;
+    }
     let m_clamped = mired.clamp(MIRED_MIN, MIRED_MAX);
-    let k = 1_000_000 / m_clamped as u32;
+    let k = (1_000_000 + (m_clamped as u32 / 2)) / m_clamped as u32;
     (k as u16).clamp(KELVIN_MIN, KELVIN_MAX)
 }
 
@@ -144,14 +150,14 @@ mod tests {
 
     #[test]
     fn test_mired_to_kelvin_conversion() {
-        assert!((mired_to_kelvin(344) as i32 - 2900).abs() <= 10);
-        assert!((mired_to_kelvin(143) as i32 - 7000).abs() <= 10);
+        assert_eq!(mired_to_kelvin(344), 2900);
+        assert_eq!(mired_to_kelvin(143), 7000);
         assert_eq!(mired_to_kelvin(200), 5000);
         assert_eq!(mired_to_kelvin(0), 4000);
 
         // Out of bounds tests
-        assert_eq!(mired_to_kelvin(500), 2906);
-        assert_eq!(mired_to_kelvin(50), 6993);
+        assert_eq!(mired_to_kelvin(500), 2900);
+        assert_eq!(mired_to_kelvin(50), 7000);
     }
 
     #[test]
