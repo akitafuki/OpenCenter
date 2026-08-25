@@ -6,6 +6,13 @@ members = [
 ]
 resolver = "2"
 
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+authors = ["Jimmie Maggard Jr"]
+license = "MIT"
+repository = "https://github.com/akitafuki/OpenCenter"
+
 # Speed up development & CI builds by optimizing dependencies once and reducing debug symbol overhead
 [profile.dev]
 opt-level = 0
