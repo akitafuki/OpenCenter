@@ -12,7 +12,7 @@ tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "time", "sy
 reqwest = { version = "0.13", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-dirs = "6.0"
+dirs = "7.0"
 anyhow = "1.0"
 mdns-sd = "0.21"
 tracing = "0.1"
